@@ -87,7 +87,9 @@ For the controls project, the simulator was working with a perfect set of sensor
 
 4. Plug in your result into the top of `config/6_Sensornoise.txt`.  Specially, set the values for `MeasuredStdDev_GPSPosXY` and `MeasuredStdDev_AccelXY` to be the values you have calculated.
 
-5. Run the simulator. If your values are correct, the dashed lines in the simulation will eventually turn green, indicating you???re capturing approx 68% of the respective measurements (which is what we expect within +/- 1 sigma bound for a Gaussian noise model)
+5. Run the simulator. If your values are correct, the dashed lines in the simulation will eventually turn green, indicating you???re capturing approx 68% of the respective measurements (which is what we expect within +/- 1 sigma bound for a Gaussian noise model)   
+
+![](./images/Sensor_Noise.gif)
 
 ```
 GPS X Std: 0.7210596171058772
@@ -120,7 +122,8 @@ Observe that there???s quite a bit of error in attitude estimation.
 
 In the screenshot above the attitude estimation using linear scheme (left) and using the improved nonlinear scheme (right). Note that Y axis on error is much greater on left.
 
-The code is in `QuadEstimatorEKF.cpp` line [95 to 100](/src/QuadEstimatorEKF.cpp#L95-L100) 
+The code is in `QuadEstimatorEKF.cpp` line [95 to 100](/src/QuadEstimatorEKF.cpp#L95-L100)    
+![](./images/Altitude_Estimation.gif) 
 
 ```
 Simulation #5 (../config/07_AttitudeEstimation.txt)
@@ -139,9 +142,9 @@ In this next step you will be implementing the prediction step of your filter.
 
 1. Run scenario `08_PredictState`.  This scenario is configured to use a perfect IMU (only an IMU). Due to the sensitivity of double-integration to attitude errors, we've made the accelerometer update very insignificant (`QuadEstimatorEKF.attitudeTau = 100`).  The plots on this simulation show element of your estimated state and that of the true state.  At the moment you should see that your estimated state does not follow the true state.
 
-2. In `QuadEstimatorEKF.cpp`, implement the state prediction step in the `PredictState()` functon. If you do it correctly, when you run scenario `08_PredictState` you should see the estimator state track the actual state, with only reasonably slow drift, as shown in the figure below:
+2. In `QuadEstimatorEKF.cpp`, implement the state prediction step in the `PredictState()` functon. If you do it correctly, when you run scenario `08_PredictState` you should see the estimator state track the actual state, with only reasonably slow drift, as shown in the figure below:   
 
-![predict drift](images/predict-slow-drift.png)
+![](./images/predict_state.gif)   
 
 3. Now let's introduce a realistic IMU, one with noise.  Run scenario `09_PredictionCov`. You will see a small fleet of quadcopter all using your prediction code to integrate forward. You will see two plots:
    - The top graph shows 10 (prediction-only) position X estimates
