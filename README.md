@@ -183,6 +183,9 @@ Another set of bad examples is shown below for having a `QVelXYStd` too large (f
 
 ![bad vx cov small](images/bad-vx-sigma-low.PNG)
 
+![](./images/PREDICT_COV.gif) 
+![](./images/PREDICT_COVERIANCE.gif)    
+
 ***Success criteria:*** *This step doesn't have any specific measurable criteria being checked.*
 
 
