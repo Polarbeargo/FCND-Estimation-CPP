@@ -152,6 +152,8 @@ In this next step you will be implementing the prediction step of your filter.
 You will notice however that the estimated covariance (white bounds) currently do not capture the growing errors.
 
 4. In `QuadEstimatorEKF.cpp`, calculate the partial derivative of the body-to-global rotation matrix in the function `GetRbgPrime()`.  Once you have that function implement, implement the rest of the prediction step (predict the state covariance forward) in `Predict()`.
+    
+![](./images/Rbg_prime.png)   
 
 **Hint: see section 7.2 of [Estimation for Quadrotors](https://www.overleaf.com/read/vymfngphcccj) for a refresher on the the transition model and the partial derivatives you may need**
 
