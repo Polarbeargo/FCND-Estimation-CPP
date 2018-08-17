@@ -228,7 +228,13 @@ Up until now we've only used the accelerometer and gyro for our state estimation
 
 5. Implement the EKF GPS Update in the function `UpdateFromGPS()`.
 
-6. Now once again re-run the simulation.  Your objective is to complete the entire simulation cycle with estimated position error of < 1m (you???ll see a green box over the bottom graph if you succeed).  You may want to try experimenting with the GPS update parameters to try and get better performance.
+6. Now once again re-run the simulation.  Your objective is to complete the entire simulation cycle with estimated position error of < 1m (you???ll see a green box over the bottom graph if you succeed).  You may want to try experimenting with the GPS update parameters to try and get better performance.   
+
+![](./images/Gps_update.gif)
+```
+Simulation #3 (../config/11_GPSUpdate.txt)
+PASS: ABS(Quad.Est.E.Pos) was less than 1.000000 for at least 20.000000 seconds
+```   
 
 ***Success criteria:*** *Your objective is to complete the entire simulation cycle with estimated position error of < 1m.*
 
@@ -245,13 +251,6 @@ Up to this point, we have been working with a controller that has been relaxed t
 2. Replace `QuadControlParams.txt` with the control parameters you came up with in the last project.
 
 3. Run scenario `11_GPSUpdate`. If your controller crashes immediately do not panic. Flying from an estimated state (even with ideal sensors) is very different from flying with ideal pose. You may need to de-tune your controller. Decrease the position and velocity gains (we???ve seen about 30% detuning being effective) to stabilize it.  Your goal is to once again complete the entire simulation cycle with an estimated position error of < 1m.
-
-    
-![](./images/Gps_update.gif)
-```
-Simulation #3 (../config/11_GPSUpdate.txt)
-PASS: ABS(Quad.Est.E.Pos) was less than 1.000000 for at least 20.000000 seconds
-```   
 
 **Hint: you may find it easiest to do your de-tuning as a 2 step process by reverting to ideal sensors and de-tuning under those conditions first.**
 
