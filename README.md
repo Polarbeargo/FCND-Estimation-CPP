@@ -77,13 +77,13 @@ Project outline:
 
 ### Step 1: Sensor Noise ###
 
-1. Choose scenario `06_NoisySensors`.  In this simulation, the interest is to record some sensor data on a static quad, so you will not see the quad move.  You will see two plots at the bottom, one for GPS X position and one for The accelerometer's x measurement.  The dashed lines are a visualization of a single standard deviation from 0 for each signal. The standard deviations are initially set to arbitrary values (after processing the data in the next step, you will be adjusting these values).  If they were set correctly, we should see ~68% of the measurement points fall into the +/- 1 sigma bound.  When you run this scenario, the graphs you see will be recorded to the following csv files with headers: `config/log/Graph1.txt` (GPS X data) and `config/log/Graph2.txt` (Accelerometer X data).
+1. Choose scenario `06_NoisySensors`.  In this simulation, the interest is to record some sensor data on a static quad, so you will not see the quad move. Run this scenario, the graphs will be recorded to the following csv files with headers: `config/log/Graph1.txt` (GPS X data) and `config/log/Graph2.txt` (Accelerometer X data).
 
 2. Process the logged files to figure out the standard deviation of the the GPS X signal and the IMU Accelerometer X signal.
 
-3. Plug in your result into the top of `config/6_Sensornoise.txt`.  Specially, set the values for `MeasuredStdDev_GPSPosXY` and `MeasuredStdDev_AccelXY` to be the values you have calculated.
+3. Plug in my result into the top of `config/6_Sensornoise.txt`.  Specially, set the values for `MeasuredStdDev_GPSPosXY` and `MeasuredStdDev_AccelXY` to be the values I have calculated.
 
-4. Run the simulator. If your values are correct, the dashed lines in the simulation will eventually turn green, indicating you are capturing approx 68% of the respective measurements (which is what we expect within +/- 1 sigma bound for a Gaussian noise model)   
+4. The dashed lines in the simulation will eventually turn green, indicating we are capturing approx 68% of the respective measurements (which is what we expect within +/- 1 sigma bound for a Gaussian noise model)   
 
 ![](./images/Sensor_Noise.gif)
 
@@ -100,20 +100,15 @@ PASS: ABS(Quad.IMU.AX-0.000000) was less than MeasuredStdDev_AccelXY for 69% of 
 
 ### Step 2: Attitude Estimation ###
 
-Now let's look at the first step to our state estimation: including information from our IMU.  In this step, you will be improving the complementary filter-type attitude filter with a better rate gyro attitude integration scheme.
+Now let's look at the first step to our state estimation: including information from our IMU.  In this step, I will be improving the complementary filter-type attitude filter with a better rate gyro attitude integration scheme.
 
 1. Run scenario `07_AttitudeEstimation`.  For this simulation, the only sensor used is the IMU and noise levels are set to 0 (see `config/07_AttitudeEstimation.txt` for all the settings for this simulation).  There are two plots visible in this simulation.
    - The top graph is showing errors in each of the estimated Euler angles.
    - The bottom shows the true Euler angles and the estimates.
 Observe that there is quite a bit of error in attitude estimation.
 
-2. In `QuadEstimatorEKF.cpp`, you will see the function `UpdateFromIMU()` contains a complementary filter-type attitude filter.  To reduce the errors in the estimated attitude (Euler Angles), implement a better rate gyro attitude integration scheme.  You should be able to reduce the attitude errors to get within 0.1 rad for each of the Euler angles, as shown in the screenshot below.
+2. In `QuadEstimatorEKF.cpp` to reduce the errors in the estimated attitude (Euler Angles), implement a better rate gyro attitude integration scheme. The code is in `QuadEstimatorEKF.cpp` line [95 to 100](/src/QuadEstimatorEKF.cpp#L95-L100)    
 
-![attitude example](images/attitude-screenshot.png)
-
-In the screenshot above the attitude estimation using linear scheme (left) and using the improved nonlinear scheme (right). Note that Y axis on error is much greater on left.
-
-The code is in `QuadEstimatorEKF.cpp` line [95 to 100](/src/QuadEstimatorEKF.cpp#L95-L100)    
 ![](./images/Altitude_Estimation.gif) 
 
 ```
@@ -123,18 +118,24 @@ PASS: ABS(Quad.Est.E.MaxEuler) was less than 0.100000 for at least 3.000000 seco
 
 ### Step 3: Prediction Step ###
 
-In this next step you will be implementing the prediction step of your filter.
-
+In this next step I implemented the prediction step of my filter.
 
 1. Run scenario `08_PredictState`.  This scenario is configured to use a perfect IMU (only an IMU). Due to the sensitivity of double-integration to attitude errors, we've made the accelerometer update very insignificant (`QuadEstimatorEKF.attitudeTau = 100`).  The plots on this simulation show element of your estimated state and that of the true state.  At the moment you should see that your estimated state does not follow the true state.    
+    
+2. In `QuadEstimatorEKF.cpp`, implement the state prediction step in the `PredictState()` functon. Predict the current state forward by time dt using current accelerations, rotation matrix Rbg and body rates as input:
 
-![](./images/Rbg.png) 
 ![](./images/transition.png)    
 
-2. In `QuadEstimatorEKF.cpp`, implement the state prediction step in the `PredictState()` functon. If you do it correctly, when you run scenario `08_PredictState` you should see the estimator state track the actual state, with only reasonably slow drift, as shown in the figure below:   
+ - The Rotation matrix:
 
-![](./images/predict_state.gif)
- 
+![](./images/Rbg.png)   
+
+  I used attitude.Rotate_BtoI(<V3F>) to rotate the acceleration from body frame to global frame. The code is in `QuadEstimatorEKF.cpp` line [166 to 174](/src/QuadEstimatorEKF.cpp#L166-L174)   
+
+![](./images/predict_state.gif)   
+
+ - Then take the Jacobian:   
+  
 ![](./images/jacobb.png) 
     
 
@@ -149,19 +150,20 @@ You will notice however that the estimated covariance (white bounds) currently d
 
 5. Run your covariance prediction and tune the `QPosXYStd` and the `QVelXYStd` process parameters in `QuadEstimatorEKF.txt` to try to capture the magnitude of the error you see. Note that as error grows our simplified model will not capture the real error dynamics (for example, specifically, coming from attitude errors), therefore  try to make it look reasonable only for a relatively short prediction period (the scenario is set for one second). 
 
-Looking at this result, you can see that in the first part of the plot, our covariance (the white line) grows very much like the data.
-
 ![](./images/PREDICT_COV.gif) 
-![](./images/PREDICT_COVERIANCE.gif)    
-
+  
 ### Step 4: Magnetometer Update ###
 
 Up until now we've only used the accelerometer and gyro for our state estimation.  In this step, you will be adding the information from the magnetometer to improve your filter's performance in estimating the vehicle's heading.
 
-1. Run scenario `10_MagUpdate`.  This scenario uses a realistic IMU, but the magnetometer update hasn???t been implemented yet. As a result, you will notice that the estimate yaw is drifting away from the real value (and the estimated standard deviation is also increasing).  Note that in this case the plot is showing you the estimated yaw error (`quad.est.e.yaw`), which is drifting away from zero as the simulation runs.  You should also see the estimated standard deviation of that state (white boundary) is also increasing.   
-
+1. Run scenario `10_MagUpdate`.  This scenario uses a realistic IMU, but the magnetometer update has not been implemented yet. As a result, you will notice that the estimate yaw is drifting away from the real value (and the estimated standard deviation is also increasing).  Note that in this case the plot is showing you the estimated yaw error (`quad.est.e.yaw`), which is drifting away from zero as the simulation runs.  You should also see the estimated standard deviation of that state (white boundary) is also increasing.   
+   
+ - By reading the magnetometer reporting YAW in the global frame:   
+ 
 ![](./images/mag0.png)    
 
+ - Since this is linear, the derivative is a matrix of zero and one:    
+ 
 ![](./images/mag1.png)    
 
 2. Tune the parameter `QYawStd` (`QuadEstimatorEKF.txt`) for the QuadEstimatorEKF so that it approximately captures the magnitude of the drift, as demonstrated here:
@@ -170,17 +172,23 @@ Up until now we've only used the accelerometer and gyro for our state estimation
 
 3. Implemented magnetometer update in the function `UpdateFromMag()`. The resulting plot is as follow:
 
-![](./images/afterMag.gif)
+![](./images/afterMag.gif)    
+
+The code is in `QuadEstimatorEKF.cpp` line [312 to 319](/src/QuadEstimatorEKF.cpp#L312-L319)    
 
 ### Step 5: Closed Loop + GPS Update ###
 
-1. Run scenario `11_GPSUpdate`. 
+Run scenario `11_GPSUpdate` and assume we get postion and velocity from GPS and using heading of the GPS but not the drone's orientation, only the direction of travel. we removing it from observation. 
 
 ![](./images/gps0.png)    
 
+   - Then the partial derivative is the identity matrix:    
+   
 ![](./images/gps1.png)
 
-![](./images/Gps_update.gif)
+![](./images/Gps_update.gif)    
+The code is in `QuadEstimatorEKF.cpp` line [281 to 291](/src/QuadEstimatorEKF.cpp#L281-L291) and successfully completed the entire simulation cycle with estimated position error of < 1m.
+
 ```
 Simulation #3 (../config/11_GPSUpdate.txt)
 PASS: ABS(Quad.Est.E.Pos) was less than 1.000000 for at least 20.000000 seconds
