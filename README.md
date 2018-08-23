@@ -206,7 +206,7 @@ Up to this point, we have been working with a controller that has been relaxed t
 
 Here is my result:    
 
-![](./images/after_tuned_step6.gif)   
+![](./images/Step6.gif)   
 
 ```
 Simulation #2 (../config/11_GPSUpdate.txt)
