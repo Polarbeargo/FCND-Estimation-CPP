@@ -39,4 +39,4 @@ maxAscentRate = 5
 maxDescentRate = 2
 maxSpeedXY = 5
 maxHorizAccel = 12
-maxTiltAngle = .7
+maxTiltAngle = 1.0
