@@ -209,7 +209,7 @@ After tune GPSPosZStd to 300, position and velocity gains pass the step 6 here i
 ![](./images/Step6.gif)   
 
 ```
-Simulation #2 (../config/11_GPSUpdate.txt)
+Simulation #17 (../config/11_GPSUpdate.txt)
 PASS: ABS(Quad.Est.E.Pos) was less than 1.000000 for at least 20.000000 seconds
 ```
 ## Tips and Tricks ##
