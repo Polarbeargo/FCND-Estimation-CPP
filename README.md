@@ -176,6 +176,12 @@ Up until now we've only used the accelerometer and gyro for our state estimation
 
 The code is in `QuadEstimatorEKF.cpp` line [312 to 319](/src/QuadEstimatorEKF.cpp#L312-L319)    
 
+```
+Simulation #4 (../config/10_MagUpdate.txt)
+PASS: ABS(Quad.Est.E.Yaw) was less than 0.120000 for at least 10.000000 seconds
+PASS: ABS(Quad.Est.E.Yaw-0.000000) was less than Quad.Est.S.Yaw for 72% of the time
+```   
+
 ### Step 5: Closed Loop + GPS Update ###
 
 Run scenario `11_GPSUpdate` and assume we get postion and velocity from GPS and using heading of the GPS but not the drone's orientation, only the direction of travel. we removing it from observation. 
